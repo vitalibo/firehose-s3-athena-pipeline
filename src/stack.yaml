@@ -1,0 +1,67 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'This stack Create/Update resources for build simple data delivery pipeline (Kinesis Firehose + S3 + Athena)'
+Parameters:
+  Name:
+    Type: String
+    Default: 'Service name that will be prefixed to resource names'
+Resources:
+  Lambda:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: !Sub '${Name}-glue-partitioner'
+      Description: 'This lambda add new partitions created by Amazon Kinesis Firehose into AWS Glue data catalog'
+      Handler: 'lambda.handler'
+      MemorySize: 128
+      Role: !GetAtt
+        - Role
+        - Arn
+      Runtime: 'python3.7'
+      Timeout: 30
+      Tags:
+        - Key: Product
+          Value: 'firehose-s3-athena-pipeline'
+        - Key: Author
+          Value: 'Vitaliy Boyarsky'
+      Code:
+  Role:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      RoleName: !Sub '${Name}-glue-partitioner'
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Policies:
+        - PolicyName: 'Runtime'
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'logs:CreateLogStream'
+                  - 'logs:PutLogEvents'
+                Resource: !GetAtt
+                  - LogGroup
+                  - Arn
+              - Effect: Allow
+                Action:
+                  - 'glue:GetTable'
+                  - 'glue:CreatePartition'
+                Resource: '*'
+  LogGroup:
+    Type: 'AWS::Logs::LogGroup'
+    Properties:
+      LogGroupName: !Sub '${Name}-glue-partitioner'
+      RetentionInDays: 3
+Outputs:
+  LambdaArn:
+    Value: !GetAtt
+      - Lambda
+      - Arn
+    Export:
+      Name: !Sub '${Name}-glue-partitioner-arn'
