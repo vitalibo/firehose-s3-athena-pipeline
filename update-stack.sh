@@ -14,7 +14,7 @@ fi
 NAME=$1; BUCKET=$2; PROFILE=$([[ $# -eq 3 ]] && echo $3 || echo 'default')
 
 aws cloudformation package --template src/stack.yaml --s3-bucket $BUCKET --s3-prefix $NAME \
-  --profile $PROFILE >packaged-stack.yaml
+  --profile $PROFILE --output-template-file packaged-stack.yaml
 
 aws cloudformation deploy --template-file packaged-stack.yaml --stack-name "$NAME-glue-partitioner" \
   --parameter-overrides Name=$NAME --capabilities 'CAPABILITY_NAMED_IAM' --profile $PROFILE
