@@ -2,7 +2,7 @@
 
 The simple solution that resolves problem adding new partitions created by Kinesis Firehose into Amazon Athena and allows creating data delivery pipelines.
 
-![Diagram](https://fwtbbmf399.execute-api.us-east-1.amazonaws.com/Prod/svg?source=https://raw.githubusercontent.com/vitalibo/firehose-s3-athena-pipeline/master/readme.md&name=diagram.svg)
+![Diagram](https://markdown-inline-svg.vitalibo.click/svg?source=https://raw.githubusercontent.com/vitalibo/firehose-s3-athena-pipeline/master/readme.md&name=diagram.svg)
 
 <details> 
 <summary>SVG code</summary>
